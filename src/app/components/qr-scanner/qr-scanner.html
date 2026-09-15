@@ -1,5 +1,9 @@
 <div class="scanner-page">
 
+  <!-- ========================================== -->
+  <!-- HEADER -->
+  <!-- ========================================== -->
+
   <header class="scanner-header">
 
     <button
@@ -26,7 +30,13 @@
 
 
       <p>
-        Scan QR or choose an image
+
+        {{
+          scanType === 'testing'
+            ? 'Scan Testing Label QR'
+            : 'Scan Wooden Factory QR'
+        }}
+
       </p>
 
     </div>
@@ -34,7 +44,9 @@
   </header>
 
 
+  <!-- ========================================== -->
   <!-- CAMERA -->
+  <!-- ========================================== -->
 
   <div class="camera-container">
 
@@ -60,11 +72,15 @@
     </div>
 
 
-    <p class="scan-message">
+    @if (!scannedData) {
 
-      Place the QR code inside the frame
+      <p class="scan-message">
 
-    </p>
+        Place the QR code inside the frame
+
+      </p>
+
+    }
 
 
     @if (isLoading) {
@@ -74,7 +90,9 @@
         <div class="spinner"></div>
 
         <span>
+
           Reading QR code...
+
         </span>
 
       </div>
@@ -84,7 +102,9 @@
   </div>
 
 
+  <!-- ========================================== -->
   <!-- STATUS -->
+  <!-- ========================================== -->
 
   @if (statusMessage) {
 
@@ -97,73 +117,138 @@
   }
 
 
-  <!-- CHOOSE IMAGE -->
+  <!-- ========================================== -->
+  <!-- SCANNED RESULT -->
+  <!-- ========================================== -->
 
-  <div class="image-option">
+  @if (scannedData) {
 
-    <div class="divider">
+    <div class="result">
 
-      <span>OR</span>
+      <div class="result-success">
 
-    </div>
+        <span class="success-icon">
+          ✅
+        </span>
 
+        <strong>
+          QR Scanned Successfully
+        </strong>
 
-    <label class="image-button">
-
-      <span class="image-icon">
-        🖼️
-      </span>
-
-      <span>
-        Choose QR Image
-      </span>
-
-
-      <input
-        type="file"
-        accept="image/*"
-        (change)="onImageSelected($event)"
-      >
-
-    </label>
+      </div>
 
 
-    <p class="image-hint">
+      <!-- EXTRACTED DRUM NUMBER -->
 
-      Choose a photo containing the QR code
+      @if (extractedDrumNumber) {
 
-    </p>
+        <div class="drum-number">
 
-  </div>
+          <span>
+            Drum Number
+          </span>
+
+          <strong>
+            {{ extractedDrumNumber }}
+          </strong>
+
+        </div>
+
+      }
 
 
-  <!-- ERROR -->
+      <!-- RAW QR DATA -->
 
-  @if (errorMessage) {
+      <div class="raw-data">
 
-    <div class="error">
+        <span>
+          QR Data
+        </span>
 
-      {{ errorMessage }}
+        <small>
+          {{ scannedData }}
+        </small>
+
+      </div>
+
+
+      <!-- CONTINUE BUTTON -->
+
+      @if (scanType === 'testing') {
+
+        <button
+          type="button"
+          class="continue-button"
+          (click)="continueToWooden()">
+
+          Continue to Wooden Factory
+
+        </button>
+
+      }
 
     </div>
 
   }
 
 
-  <!-- SCANNED DATA -->
+  <!-- ========================================== -->
+  <!-- CHOOSE IMAGE -->
+  <!-- ========================================== -->
 
-  @if (scannedData) {
+  @if (!scannedData) {
 
-    <div class="result">
+    <div class="image-option">
 
-      <p>
-        QR Scanned Successfully
+      <div class="divider">
+
+        <span>
+          OR
+        </span>
+
+      </div>
+
+
+      <label class="image-button">
+
+        <span class="image-icon">
+          🖼️
+        </span>
+
+        <span>
+          Choose QR Image
+        </span>
+
+
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onImageSelected($event)"
+        >
+
+      </label>
+
+
+      <p class="image-hint">
+
+        Choose a photo containing the QR code
+
       </p>
 
+    </div>
 
-      <small>
-        {{ scannedData }}
-      </small>
+  }
+
+
+  <!-- ========================================== -->
+  <!-- ERROR -->
+  <!-- ========================================== -->
+
+  @if (errorMessage) {
+
+    <div class="error">
+
+      {{ errorMessage }}
 
     </div>
 

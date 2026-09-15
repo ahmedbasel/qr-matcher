@@ -16,7 +16,6 @@ import {
 
 import jsQR from 'jsqr';
 
-
 @Component({
   selector: 'app-qr-scanner',
   standalone: true,
@@ -25,7 +24,6 @@ import jsQR from 'jsqr';
   styleUrl: './qr-scanner.scss'
 })
 export class QrScanner implements OnDestroy {
-
 
   // ==========================================
   // VIDEO ELEMENT
@@ -50,7 +48,6 @@ export class QrScanner implements OnDestroy {
   @Output()
   scanned = new EventEmitter<string>();
 
-
   @Output()
   closed = new EventEmitter<void>();
 
@@ -59,9 +56,7 @@ export class QrScanner implements OnDestroy {
   // QR READER
   // ==========================================
 
-  private reader =
-    new BrowserMultiFormatReader();
-
+  private reader = new BrowserMultiFormatReader();
 
   private controls?: IScannerControls;
 
@@ -78,8 +73,12 @@ export class QrScanner implements OnDestroy {
 
   isLoading = false;
 
+  extractedDrumNumber = '';
 
-  // Prevent multiple scans
+
+  // ==========================================
+  // SCAN STATE
+  // ==========================================
 
   private alreadyScanned = false;
 
@@ -91,11 +90,6 @@ export class QrScanner implements OnDestroy {
   constructor() {
 
     afterNextRender(() => {
-
-      /*
-       * Wait until Angular completely creates
-       * the video element before starting camera.
-       */
 
       setTimeout(() => {
 
@@ -126,6 +120,8 @@ export class QrScanner implements OnDestroy {
 
     this.isLoading = false;
 
+    this.extractedDrumNumber = '';
+
     this.alreadyScanned = false;
 
   }
@@ -141,8 +137,7 @@ export class QrScanner implements OnDestroy {
 
       this.errorMessage = '';
 
-      this.statusMessage =
-        'Starting camera...';
+      this.statusMessage = 'Starting camera...';
 
 
       // Make sure video exists
@@ -227,7 +222,6 @@ export class QrScanner implements OnDestroy {
           }
         );
 
-
     } catch (error) {
 
       console.error(
@@ -235,9 +229,7 @@ export class QrScanner implements OnDestroy {
         error
       );
 
-
       this.statusMessage = '';
-
 
       this.errorMessage =
         'Camera unavailable. You can choose an image instead.';
@@ -278,6 +270,8 @@ export class QrScanner implements OnDestroy {
 
     this.scannedData = '';
 
+    this.extractedDrumNumber = '';
+
     this.statusMessage =
       'Loading image...';
 
@@ -316,10 +310,7 @@ export class QrScanner implements OnDestroy {
             'Reading QR code...';
 
 
-          this.readQrFromImage(
-            image
-          );
-
+          this.readQrFromImage(image);
 
         } catch (error) {
 
@@ -388,7 +379,6 @@ export class QrScanner implements OnDestroy {
   private readQrFromImage(
     image: HTMLImageElement
   ): void {
-
 
     const canvas =
       document.createElement('canvas');
@@ -530,7 +520,6 @@ export class QrScanner implements OnDestroy {
     data: string
   ): void {
 
-
     if (this.alreadyScanned) {
 
       return;
@@ -610,13 +599,15 @@ export class QrScanner implements OnDestroy {
 
     this.scannedData = data;
 
+    this.extractedDrumNumber = drumNumber;
+
     this.isLoading = false;
 
     this.errorMessage = '';
 
 
     this.statusMessage =
-      `Drum Number: ${drumNumber}`;
+      'QR scanned successfully.';
 
 
     // Stop current camera
@@ -625,8 +616,30 @@ export class QrScanner implements OnDestroy {
 
 
     /*
-     * Give the UI a moment to show the result,
-     * then send the number to App.
+     * IMPORTANT:
+     *
+     * We DO NOT emit immediately here.
+     *
+     * The first QR data stays visible
+     * so the user can verify it.
+     */
+
+    if (this.scanType === 'testing') {
+
+      console.log(
+        'Testing Label scanned. Waiting for confirmation.'
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * Wooden Factory:
+     *
+     * After scanning the second QR,
+     * send the extracted number to App.
      */
 
     setTimeout(() => {
@@ -635,7 +648,71 @@ export class QrScanner implements OnDestroy {
         drumNumber!
       );
 
-    }, 500);
+    }, 300);
+
+  }
+
+
+  // ==========================================
+  // CONTINUE TO WOODEN FACTORY
+  // ==========================================
+
+  continueToWooden(): void {
+
+    if (
+      this.scanType !== 'testing' ||
+      !this.extractedDrumNumber
+    ) {
+
+      return;
+
+    }
+
+
+    console.log(
+      'Testing Number confirmed:',
+      this.extractedDrumNumber
+    );
+
+
+    /*
+     * Change scanner mode.
+     */
+
+    this.scanType = 'wooden';
+
+
+    /*
+     * Clear previous result
+     * before starting Wooden scan.
+     */
+
+    this.scannedData = '';
+
+    this.extractedDrumNumber = '';
+
+    this.errorMessage = '';
+
+    this.statusMessage =
+      'Scan the Wooden Factory QR code.';
+
+    this.isLoading = false;
+
+    this.alreadyScanned = false;
+
+
+    /*
+     * Start camera again.
+     *
+     * Small delay gives Angular time
+     * to update the UI.
+     */
+
+    setTimeout(() => {
+
+      this.startScanner();
+
+    }, 150);
 
   }
 
@@ -648,7 +725,6 @@ export class QrScanner implements OnDestroy {
     data: string
   ): string | null {
 
-
     /*
      * Example:
      *
@@ -658,7 +734,6 @@ export class QrScanner implements OnDestroy {
      *
      * 30857
      */
-
 
     const match =
       data.match(
@@ -681,7 +756,6 @@ export class QrScanner implements OnDestroy {
     data: string
   ): string | null {
 
-
     /*
      * Examples:
      *
@@ -693,7 +767,6 @@ export class QrScanner implements OnDestroy {
      *
      * 30857
      */
-
 
     const match =
       data.match(
@@ -713,7 +786,6 @@ export class QrScanner implements OnDestroy {
   // ==========================================
 
   stopScanner(): void {
-
 
     // Stop ZXing
 

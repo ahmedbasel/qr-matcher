@@ -365,83 +365,154 @@ export class QrScanner implements OnDestroy {
    * IMAGE QR READER
    */
 
-  private readQrFromImage(
-    image: HTMLImageElement
-  ): void {
+  private async readQrFromImage(
+  image: HTMLImageElement
+): Promise<void> {
 
-    /*
-     * First try BarcodeDetector.
-     */
+  console.log('IMAGE SIZE:', {
+    width: image.naturalWidth,
+    height: image.naturalHeight
+  });
 
-    const BarcodeDetectorClass =
-      (window as any).BarcodeDetector;
+  /*
+   * =========================================
+   * 1. ZXing
+   * =========================================
+   */
 
+  try {
 
-    if (BarcodeDetectorClass) {
+    const result =
+      await this.zxingReader.decodeFromImageElement(
+        image
+      );
 
-      try {
-
-        const detector =
-          new BarcodeDetectorClass({
-            formats: ['qr_code']
-          });
-
-
-        detector
-          .detect(image)
-
-          .then((results: any[]) => {
-
-            if (
-              results &&
-              results.length > 0 &&
-              results[0]?.rawValue &&
-              results[0].rawValue.trim()
-            ) {
-
-              this.processQrData(
-                results[0].rawValue.trim()
-              );
-
-              return;
-
-            }
+    const data =
+      result?.getText()?.trim();
 
 
-            /*
-             * If native detector fails,
-             * use jsQR.
-             */
+    if (data) {
 
-            this.tryJsQrImage(image);
+      console.log(
+        'ZXing IMAGE QR:',
+        data
+      );
 
-          })
+      this.processQrData(data);
 
-          .catch(() => {
+      return;
 
-            this.tryJsQrImage(image);
+    }
 
-          });
+  }
+
+  catch (error) {
+
+    console.warn(
+      'ZXing image decode failed:',
+      error
+    );
+
+  }
 
 
-        return;
+  /*
+   * =========================================
+   * 2. Native BarcodeDetector
+   * =========================================
+   */
 
-      }
+  const BarcodeDetectorClass =
+    (window as any).BarcodeDetector;
 
-      catch {
 
-        /*
-         * Continue to jsQR.
-         */
+  if (BarcodeDetectorClass) {
+
+    try {
+
+      const detector =
+        new BarcodeDetectorClass({
+          formats: ['qr_code']
+        });
+
+
+      const results =
+        await detector.detect(image);
+
+
+      if (
+        results &&
+        results.length > 0
+      ) {
+
+        const data =
+          results[0]?.rawValue?.trim();
+
+
+        if (data) {
+
+          console.log(
+            'Native IMAGE QR:',
+            data
+          );
+
+          this.processQrData(data);
+
+          return;
+
+        }
 
       }
 
     }
 
+    catch (error) {
+
+      console.warn(
+        'Native image decoder failed:',
+        error
+      );
+
+    }
+
+  }
+
+
+  /*
+   * =========================================
+   * 3. jsQR fallback
+   * =========================================
+   */
+
+  console.log(
+    'Trying jsQR fallback...'
+  );
+
+
+  try {
 
     this.tryJsQrImage(image);
 
   }
+
+  catch (error) {
+
+    console.error(
+      'jsQR fallback failed:',
+      error
+    );
+
+
+    this.isLoading = false;
+
+    this.errorMessage =
+      'Could not read this QR image.';
+
+    this.cdr.detectChanges();
+
+  }
+
+}
 
 
   /*

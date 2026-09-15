@@ -20,16 +20,32 @@ export class App {
 
   matchResult: boolean | null = null;
 
+
+  // =========================
+  // OPEN SCANNER
+  // =========================
+
   openScanner(type: 'testing' | 'wooden'): void {
 
     this.scanType = type;
 
     this.showScanner = true;
+
   }
+
+
+  // =========================
+  // HANDLE SCAN
+  // =========================
 
   handleScan(number: string): void {
 
     console.log('Scanned Number:', number);
+
+
+    // =========================
+    // TESTING LABEL
+    // =========================
 
     if (this.scanType === 'testing') {
 
@@ -40,13 +56,32 @@ export class App {
         this.testingNumber
       );
 
-      // بعد Testing نروح تلقائي للـ Wooden
-      this.scanType = 'wooden';
 
-      this.showScanner = true;
+      /*
+       * Close the current scanner first.
+       * Then open a completely new scanner
+       * for Wooden Factory.
+       */
+
+      this.showScanner = false;
+
+
+      setTimeout(() => {
+
+        this.scanType = 'wooden';
+
+        this.showScanner = true;
+
+      }, 150);
+
 
       return;
     }
+
+
+    // =========================
+    // WOODEN FACTORY
+    // =========================
 
     if (this.scanType === 'wooden') {
 
@@ -57,17 +92,42 @@ export class App {
         this.woodenNumber
       );
 
+
+      // Compare the numbers
+
       this.matchResult =
         this.testingNumber === this.woodenNumber;
 
+
+      console.log(
+        'MATCH RESULT:',
+        this.matchResult
+      );
+
+
+      // Close scanner
+
       this.showScanner = false;
+
     }
+
   }
+
+
+  // =========================
+  // CLOSE SCANNER
+  // =========================
 
   closeScanner(): void {
 
     this.showScanner = false;
+
   }
+
+
+  // =========================
+  // SCAN AGAIN
+  // =========================
 
   scanAgain(): void {
 
@@ -79,6 +139,15 @@ export class App {
 
     this.scanType = 'testing';
 
-    this.showScanner = true;
+
+    // Open fresh scanner
+
+    setTimeout(() => {
+
+      this.showScanner = true;
+
+    }, 100);
+
   }
+
 }

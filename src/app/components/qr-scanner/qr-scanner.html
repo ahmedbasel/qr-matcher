@@ -4,24 +4,37 @@
 
     <button
       class="back-button"
+      type="button"
       (click)="closeScanner()">
+
       ←
+
     </button>
+
 
     <div>
 
       <h1>
-        {{ scanType === 'testing'
-          ? 'Testing Label'
-          : 'Wooden Factory' }}
+
+        {{
+          scanType === 'testing'
+            ? 'Testing Label'
+            : 'Wooden Factory'
+        }}
+
       </h1>
 
-      <p>Scan QR Code</p>
+
+      <p>
+        Scan QR or choose an image
+      </p>
 
     </div>
 
   </header>
 
+
+  <!-- CAMERA -->
 
   <div class="camera-container">
 
@@ -48,20 +61,96 @@
 
 
     <p class="scan-message">
+
       Place the QR code inside the frame
+
+    </p>
+
+
+    @if (isLoading) {
+
+      <div class="loading">
+
+        <div class="spinner"></div>
+
+        <span>
+          Reading QR code...
+        </span>
+
+      </div>
+
+    }
+
+  </div>
+
+
+  <!-- STATUS -->
+
+  @if (statusMessage) {
+
+    <div class="status-message">
+
+      {{ statusMessage }}
+
+    </div>
+
+  }
+
+
+  <!-- CHOOSE IMAGE -->
+
+  <div class="image-option">
+
+    <div class="divider">
+
+      <span>OR</span>
+
+    </div>
+
+
+    <label class="image-button">
+
+      <span class="image-icon">
+        🖼️
+      </span>
+
+      <span>
+        Choose QR Image
+      </span>
+
+
+      <input
+        type="file"
+        accept="image/*"
+        (change)="onImageSelected($event)"
+      >
+
+    </label>
+
+
+    <p class="image-hint">
+
+      Choose a photo containing the QR code
+
     </p>
 
   </div>
 
 
+  <!-- ERROR -->
+
   @if (errorMessage) {
 
     <div class="error">
+
       {{ errorMessage }}
+
     </div>
 
   }
 
+
+  <!-- SCANNED DATA -->
 
   @if (scannedData) {
 
@@ -70,6 +159,7 @@
       <p>
         QR Scanned Successfully
       </p>
+
 
       <small>
         {{ scannedData }}

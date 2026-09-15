@@ -1041,21 +1041,15 @@ extractTestingLabelNumber(
   data: string
 ): string | null {
 
-  const match =
-    data.match(
-      /Q-(\d+)/i
-    );
+  const match = data.match(
+    /Drum\s*Number\s*:\s*([A-Z]-?\d{5})/i
+  );
 
   if (!match) {
     return null;
   }
 
-  const digits =
-    match[1];
-
-  return digits.length >= 5
-    ? digits.substring(0, 5)
-    : null;
+  return match[1];
 }
 
 
@@ -1070,21 +1064,19 @@ extractTestingLabelNumber(
    */
 
   extractWoodenFactoryNumber(
-    data: string
-  ): string | null {
+  data: string
+): string | null {
 
-    const match =
-      data.match(
-        /(?:^|[^A-Z0-9])R-(\d+)-26(?:[^A-Z0-9]|$)/i
-      );
+  const match = data.match(
+    /SER-([A-Z])-(\d{5})-26/i
+  );
 
-
-    return match
-      ? match[1]
-      : null;
-
+  if (!match) {
+    return null;
   }
 
+  return `${match[1]}-${match[2]}`;
+}
 
   /*
    * STOP CAMERA

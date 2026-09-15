@@ -70,9 +70,16 @@ export class App {
 
       // Compare both numbers
 
-      this.matchResult =
-        this.testingNumber === this.woodenNumber;
+ const testingCode =
+  this.testingNumber.match(/^[A-Z]-\d{5}$/i)?.[0] ?? '';
 
+const woodenCode =
+  this.woodenNumber.match(/^[A-Z]-\d{5}$/i)?.[0] ?? '';
+
+this.matchResult =
+  testingCode !== '' &&
+  woodenCode !== '' &&
+  testingCode.toUpperCase() === woodenCode.toUpperCase();
 
       console.log(
         'Testing:',

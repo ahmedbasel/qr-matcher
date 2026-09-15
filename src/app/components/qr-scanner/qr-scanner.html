@@ -1,0 +1,82 @@
+<div class="scanner-page">
+
+  <header class="scanner-header">
+
+    <button
+      class="back-button"
+      (click)="closeScanner()">
+      ←
+    </button>
+
+    <div>
+
+      <h1>
+        {{ scanType === 'testing'
+          ? 'Testing Label'
+          : 'Wooden Factory' }}
+      </h1>
+
+      <p>Scan QR Code</p>
+
+    </div>
+
+  </header>
+
+
+  <div class="camera-container">
+
+    <video
+      #video
+      class="camera"
+      autoplay
+      muted
+      playsinline>
+    </video>
+
+
+    <div class="scan-frame">
+
+      <div class="corner top-left"></div>
+
+      <div class="corner top-right"></div>
+
+      <div class="corner bottom-left"></div>
+
+      <div class="corner bottom-right"></div>
+
+    </div>
+
+
+    <p class="scan-message">
+      Place the QR code inside the frame
+    </p>
+
+  </div>
+
+
+  @if (errorMessage) {
+
+    <div class="error">
+      {{ errorMessage }}
+    </div>
+
+  }
+
+
+  @if (scannedData) {
+
+    <div class="result">
+
+      <p>
+        QR Scanned Successfully
+      </p>
+
+      <small>
+        {{ scannedData }}
+      </small>
+
+    </div>
+
+  }
+
+</div>

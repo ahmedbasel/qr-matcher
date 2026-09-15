@@ -1,1 +1,100 @@
-/* You can add global styles to this file, and also import other style files */
+.result-page {
+  min-height: 100dvh;
+  padding: 30px 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  box-sizing: border-box;
+
+  background: #f5f7fa;
+}
+
+.result-card {
+  width: 100%;
+  max-width: 420px;
+
+  padding: 35px 25px;
+
+  box-sizing: border-box;
+
+  text-align: center;
+
+  background: white;
+
+  border-radius: 28px;
+
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+
+  .result-icon {
+    font-size: 65px;
+    margin-bottom: 15px;
+  }
+
+  h1 {
+    margin: 0;
+
+    font-size: 36px;
+    font-weight: 900;
+  }
+
+  p {
+    margin: 12px 0 30px;
+
+    color: #667085;
+    font-size: 15px;
+  }
+}
+
+.numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  div {
+    padding: 15px;
+
+    border-radius: 15px;
+
+    background: #f5f7fa;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    span {
+      font-size: 12px;
+      color: #667085;
+    }
+
+    strong {
+      font-size: 20px;
+    }
+  }
+}
+
+.scan-again {
+  width: 100%;
+  max-width: 420px;
+
+  margin-top: 20px;
+
+  min-height: 58px;
+
+  border: none;
+  border-radius: 18px;
+
+  background: #111827;
+  color: white;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}

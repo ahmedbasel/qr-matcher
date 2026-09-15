@@ -37,7 +37,10 @@ export class App {
     console.log('Scanned Number:', number);
 
 
-    // Testing Label
+    // =========================
+    // TESTING LABEL
+    // =========================
+
     if (this.scanType === 'testing') {
 
       this.testingNumber = number;
@@ -48,24 +51,46 @@ export class App {
       );
 
       return;
-
     }
 
 
-    // Wooden Factory
+    // =========================
+    // WOODEN FACTORY
+    // =========================
+
     if (this.scanType === 'wooden') {
 
       this.woodenNumber = number;
 
       console.log(
-        'Wooden Number:',
+        'Wooden Number Saved:',
         this.woodenNumber
       );
 
 
+      // Compare both numbers
+
       this.matchResult =
         this.testingNumber === this.woodenNumber;
 
+
+      console.log(
+        'Testing:',
+        this.testingNumber
+      );
+
+      console.log(
+        'Wooden:',
+        this.woodenNumber
+      );
+
+      console.log(
+        'Match:',
+        this.matchResult
+      );
+
+
+      // Close scanner after second scan
 
       this.showScanner = false;
 
@@ -77,6 +102,10 @@ export class App {
   goToWooden(): void {
 
     this.scanType = 'wooden';
+
+    console.log(
+      'Moving to Wooden Factory scan'
+    );
 
   }
 
@@ -90,6 +119,8 @@ export class App {
 
   scanAgain(): void {
 
+    // Reset everything
+
     this.testingNumber = '';
 
     this.woodenNumber = '';
@@ -97,6 +128,8 @@ export class App {
     this.matchResult = null;
 
     this.scanType = 'testing';
+
+    // Open Testing scanner again
 
     this.showScanner = true;
 

@@ -1,170 +1,190 @@
 <div class="scanner-page">
 
+  <!-- HEADER -->
 
   <header class="scanner-header">
-
 
     <button
       class="back-button"
       type="button"
       (click)="closeScanner()">
-
       ←
-
     </button>
 
+    <div class="header-info">
 
-    <div>
+      <span class="step-badge">
+        {{ scanType === 'testing' ? 'STEP 1' : 'STEP 2' }}
+      </span>
 
       <h1>
-
         {{
           scanType === 'testing'
             ? 'Testing Label'
             : 'Wooden Factory'
         }}
-
       </h1>
 
-
       <p>
-
         {{
           scanType === 'testing'
-            ? 'Scan Testing Label QR'
-            : 'Scan Wooden Factory QR'
+            ? 'Scan the Testing Label QR code'
+            : 'Scan the Wooden Factory QR code'
         }}
-
       </p>
 
     </div>
-
 
   </header>
 
 
+  <!-- CAMERA -->
 
-  <div class="camera-container">
+  @if (!scannedData) {
 
+    <div class="camera-container">
 
-    <video
-      #video
-      class="camera"
-      autoplay
-      muted
-      playsinline>
-    </video>
-
-
-    <div class="scan-frame">
-
-      <div class="corner top-left"></div>
-
-      <div class="corner top-right"></div>
-
-      <div class="corner bottom-left"></div>
-
-      <div class="corner bottom-right"></div>
-
-    </div>
+      <video
+        #video
+        class="camera"
+        autoplay
+        muted
+        playsinline>
+      </video>
 
 
+      <div class="camera-overlay">
 
-    @if (!scannedData) {
+        <div class="scan-frame">
 
-      <p class="scan-message">
+          <div class="corner top-left"></div>
+          <div class="corner top-right"></div>
+          <div class="corner bottom-left"></div>
+          <div class="corner bottom-right"></div>
 
-        Place the QR code inside the frame
+        </div>
 
-      </p>
-
-    }
+      </div>
 
 
+      <div class="scan-message">
 
-    @if (isLoading) {
-
-      <div class="loading">
-
-        <div class="spinner"></div>
+        <span class="scan-icon">⌁</span>
 
         <span>
-
-          Reading QR code...
-
+          Place the QR code inside the frame
         </span>
 
       </div>
 
-    }
 
+      @if (isLoading) {
 
-  </div>
+        <div class="loading">
 
+          <div class="spinner"></div>
 
+          <span>
+            Reading QR code...
+          </span>
 
-  @if (statusMessage) {
+        </div>
 
-    <div class="status-message">
-
-      {{ statusMessage }}
+      }
 
     </div>
 
   }
 
 
+  <!-- STATUS -->
+
+  @if (statusMessage && !scannedData) {
+
+    <div class="status-message">
+      {{ statusMessage }}
+    </div>
+
+  }
+
+
+  <!-- RESULT -->
 
   @if (scannedData) {
 
-    <div class="result">
+    <section class="result-card">
+
+      <!-- SUCCESS -->
+
+      <div class="success-header">
+
+        <div class="success-icon">
+          ✓
+        </div>
+
+        <div>
+
+          <span>
+            QR CODE
+          </span>
+
+          <h2>
+            Scanned Successfully
+          </h2>
+
+        </div>
+
+      </div>
 
 
-      <div class="result-success">
+      <!-- TYPE -->
 
-        <span class="success-icon">
-          ✅
+      <div class="type-label">
+
+        {{
+          scanType === 'testing'
+            ? 'TESTING LABEL'
+            : 'WOODEN FACTORY'
+        }}
+
+      </div>
+
+
+      <!-- DRUM NUMBER -->
+
+      <div class="drum-card">
+
+        <span class="label">
+          Drum Number
         </span>
 
         <strong>
-          QR Scanned Successfully
+          {{ extractedDrumNumber }}
         </strong>
 
       </div>
 
 
+      <!-- RAW DATA -->
 
-      @if (extractedDrumNumber) {
+      <div class="raw-card">
 
-        <div class="drum-number">
+        <div class="raw-header">
 
           <span>
-            Drum Number
+            QR Data
           </span>
-
-          <strong>
-            {{ extractedDrumNumber }}
-          </strong>
 
         </div>
 
-      }
-
-
-
-      <div class="raw-data">
-
-        <span>
-          QR Data
-        </span>
-
-        <small>
+        <div class="raw-content">
           {{ scannedData }}
-        </small>
+        </div>
 
       </div>
 
 
+      <!-- NEXT BUTTON -->
 
       @if (scanType === 'testing') {
 
@@ -173,23 +193,28 @@
           class="continue-button"
           (click)="goToWooden()">
 
-          Go to Wooden Factory
+          <span>
+            Go to Wooden Factory
+          </span>
+
+          <span class="arrow">
+            →
+          </span>
 
         </button>
 
       }
 
-
-    </div>
+    </section>
 
   }
 
 
+  <!-- IMAGE OPTION -->
 
   @if (!scannedData) {
 
-    <div class="image-option">
-
+    <section class="image-option">
 
       <div class="divider">
 
@@ -210,10 +235,10 @@
           Choose QR Image
         </span>
 
-
         <input
           type="file"
           accept="image/*"
+          capture="environment"
           (change)="onImageSelected($event)"
         >
 
@@ -221,27 +246,30 @@
 
 
       <p class="image-hint">
-
-        Choose a photo containing the QR code
-
+        Choose a clear photo containing the full QR code
       </p>
 
-
-    </div>
+    </section>
 
   }
 
 
+  <!-- ERROR -->
 
   @if (errorMessage) {
 
     <div class="error">
 
-      {{ errorMessage }}
+      <span class="error-icon">
+        !
+      </span>
+
+      <span>
+        {{ errorMessage }}
+      </span>
 
     </div>
 
   }
-
 
 </div>

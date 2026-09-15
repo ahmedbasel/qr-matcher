@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -40,7 +41,8 @@ export class QrScanner implements OnDestroy {
   @Output()
   goWooden = new EventEmitter<void>();
 
-  private readonly zxingReader = new BrowserQRCodeReader();
+  private readonly zxingReader =
+    new BrowserQRCodeReader();
 
   private zxingControls?: IScannerControls;
 
@@ -63,7 +65,9 @@ export class QrScanner implements OnDestroy {
   private startingCamera = false;
 
 
-  constructor() {
+  constructor(
+    private cdr: ChangeDetectorRef
+  ) {
 
     afterNextRender(() => {
 
@@ -78,28 +82,56 @@ export class QrScanner implements OnDestroy {
 
   async startScanner(): Promise<void> {
 
-    if (this.startingCamera || this.alreadyScanned) {
+    /*
+     * Don't start the camera again if:
+     *
+     * 1. Camera is already starting
+     * 2. QR was already scanned
+     * 3. We already have data displayed
+     */
+
+    if (
+      this.startingCamera ||
+      this.alreadyScanned ||
+      this.scannedData
+    ) {
       return;
     }
+
 
     this.startingCamera = true;
 
     this.errorMessage = '';
-    this.statusMessage = 'Starting camera...';
+
+    this.statusMessage =
+      'Starting camera...';
+
 
     try {
 
-      const video = this.video?.nativeElement;
+      const video =
+        this.video?.nativeElement;
+
 
       if (!video) {
 
         this.errorMessage =
           'Camera element not found.';
 
+        this.cdr.detectChanges();
+
         return;
+
       }
 
+
+      /*
+       * Make sure any old scanner
+       * is completely stopped.
+       */
+
       this.stopScanner();
+
 
       const stream =
         await navigator.mediaDevices.getUserMedia({
@@ -108,9 +140,11 @@ export class QrScanner implements OnDestroy {
             facingMode: {
               ideal: 'environment'
             },
+
             width: {
               ideal: 1920
             },
+
             height: {
               ideal: 1080
             }
@@ -130,6 +164,7 @@ export class QrScanner implements OnDestroy {
 
       video.muted = true;
 
+
       await video.play();
 
 
@@ -137,9 +172,11 @@ export class QrScanner implements OnDestroy {
         'Point the camera at the QR code.';
 
 
+      this.cdr.detectChanges();
+
+
       /*
        * Try native BarcodeDetector first.
-       * If unavailable, ZXing will be used.
        */
 
       const BarcodeDetectorClass =
@@ -160,9 +197,12 @@ export class QrScanner implements OnDestroy {
             video
           );
 
+
           return;
 
-        } catch {
+        }
+
+        catch {
 
           this.nativeDetector = null;
 
@@ -170,6 +210,10 @@ export class QrScanner implements OnDestroy {
 
       }
 
+
+      /*
+       * Fallback to ZXing.
+       */
 
       await this.startZxing(video);
 
@@ -187,6 +231,8 @@ export class QrScanner implements OnDestroy {
       this.errorMessage =
         'Camera unavailable. Please allow camera permission or choose an image.';
 
+      this.cdr.detectChanges();
+
     }
 
     finally {
@@ -197,6 +243,10 @@ export class QrScanner implements OnDestroy {
 
   }
 
+
+  /*
+   * NATIVE QR DETECTOR
+   */
 
   private scanWithNativeDetector(
     video: HTMLVideoElement
@@ -212,7 +262,10 @@ export class QrScanner implements OnDestroy {
 
     const detect = async () => {
 
-      if (this.alreadyScanned) {
+      if (
+        this.alreadyScanned ||
+        this.scannedData
+      ) {
         return;
       }
 
@@ -225,7 +278,9 @@ export class QrScanner implements OnDestroy {
         ) {
 
           const results =
-            await this.nativeDetector.detect(video);
+            await this.nativeDetector.detect(
+              video
+            );
 
 
           if (
@@ -244,7 +299,9 @@ export class QrScanner implements OnDestroy {
                 data
               );
 
+
               this.processQrData(data);
+
 
               return;
 
@@ -266,10 +323,17 @@ export class QrScanner implements OnDestroy {
       }
 
 
-      this.nativeAnimationFrame =
-        requestAnimationFrame(
-          detect
-        );
+      if (
+        !this.alreadyScanned &&
+        !this.scannedData
+      ) {
+
+        this.nativeAnimationFrame =
+          requestAnimationFrame(
+            detect
+          );
+
+      }
 
     };
 
@@ -278,6 +342,10 @@ export class QrScanner implements OnDestroy {
 
   }
 
+
+  /*
+   * ZXING CAMERA SCANNER
+   */
 
   private async startZxing(
     video: HTMLVideoElement
@@ -289,18 +357,25 @@ export class QrScanner implements OnDestroy {
         await this.zxingReader.decodeFromConstraints(
 
           {
+
             video: {
+
               facingMode: {
                 ideal: 'environment'
               },
+
               width: {
                 ideal: 1920
               },
+
               height: {
                 ideal: 1080
               }
+
             },
+
             audio: false
+
           },
 
           video,
@@ -309,16 +384,19 @@ export class QrScanner implements OnDestroy {
 
             if (
               result &&
-              !this.alreadyScanned
+              !this.alreadyScanned &&
+              !this.scannedData
             ) {
 
               const data =
                 result.getText();
 
+
               console.log(
                 'ZXing QR:',
                 data
               );
+
 
               this.processQrData(data);
 
@@ -337,8 +415,12 @@ export class QrScanner implements OnDestroy {
         error
       );
 
+
       this.errorMessage =
         'QR scanner could not start.';
+
+
+      this.cdr.detectChanges();
 
     }
 
@@ -349,20 +431,29 @@ export class QrScanner implements OnDestroy {
    * IMAGE SCANNING
    */
 
-  onImageSelected(event: Event): void {
+  onImageSelected(
+    event: Event
+  ): void {
 
     const input =
       event.target as HTMLInputElement;
 
+
     const file =
       input.files?.[0];
+
 
     if (!file) {
       return;
     }
 
 
+    /*
+     * Stop camera immediately.
+     */
+
     this.stopScanner();
+
 
     this.errorMessage = '';
 
@@ -376,6 +467,9 @@ export class QrScanner implements OnDestroy {
     this.isLoading = true;
 
     this.alreadyScanned = false;
+
+
+    this.cdr.detectChanges();
 
 
     const reader =
@@ -408,6 +502,8 @@ export class QrScanner implements OnDestroy {
           this.errorMessage =
             'Could not read this image.';
 
+          this.cdr.detectChanges();
+
         }
 
       };
@@ -419,6 +515,8 @@ export class QrScanner implements OnDestroy {
 
         this.errorMessage =
           'Could not load this image.';
+
+        this.cdr.detectChanges();
 
       };
 
@@ -436,10 +534,13 @@ export class QrScanner implements OnDestroy {
       this.errorMessage =
         'Could not read the selected image.';
 
+      this.cdr.detectChanges();
+
     };
 
 
     reader.readAsDataURL(file);
+
 
     input.value = '';
 
@@ -447,12 +548,7 @@ export class QrScanner implements OnDestroy {
 
 
   /*
-   * More reliable image scanning:
-   *
-   * 1. Try native BarcodeDetector
-   * 2. Try original image with jsQR
-   * 3. Try grayscale
-   * 4. Try multiple thresholds
+   * IMAGE QR READER
    */
 
   private readQrFromImage(
@@ -462,6 +558,10 @@ export class QrScanner implements OnDestroy {
     const BarcodeDetectorClass =
       (window as any).BarcodeDetector;
 
+
+    /*
+     * First try native BarcodeDetector.
+     */
 
     if (BarcodeDetectorClass) {
 
@@ -475,6 +575,7 @@ export class QrScanner implements OnDestroy {
 
         detector
           .detect(image)
+
           .then((results: any[]) => {
 
             if (
@@ -495,6 +596,7 @@ export class QrScanner implements OnDestroy {
             this.tryJsQrImage(image);
 
           })
+
           .catch(() => {
 
             this.tryJsQrImage(image);
@@ -520,6 +622,10 @@ export class QrScanner implements OnDestroy {
   }
 
 
+  /*
+   * JSQR IMAGE FALLBACK
+   */
+
   private tryJsQrImage(
     image: HTMLImageElement
   ): void {
@@ -527,21 +633,28 @@ export class QrScanner implements OnDestroy {
     const canvas =
       document.createElement('canvas');
 
+
     const context =
-      canvas.getContext('2d', {
-        willReadFrequently: true
-      });
+      canvas.getContext(
+        '2d',
+        {
+          willReadFrequently: true
+        }
+      );
 
 
     if (!context) {
+
       throw new Error(
         'Canvas unavailable.'
       );
+
     }
 
 
     let width =
       image.naturalWidth;
+
 
     let height =
       image.naturalHeight;
@@ -561,10 +674,12 @@ export class QrScanner implements OnDestroy {
           MAX_SIZE / height
         );
 
+
       width =
         Math.round(
           width * scale
         );
+
 
       height =
         Math.round(
@@ -575,6 +690,7 @@ export class QrScanner implements OnDestroy {
 
 
     canvas.width = width;
+
     canvas.height = height;
 
 
@@ -597,8 +713,8 @@ export class QrScanner implements OnDestroy {
 
 
     /*
-     * First attempt:
-     * Original image
+     * Attempt 1:
+     * Original
      */
 
     let result =
@@ -625,7 +741,7 @@ export class QrScanner implements OnDestroy {
 
 
     /*
-     * Second attempt:
+     * Attempt 2:
      * Grayscale
      */
 
@@ -648,8 +764,11 @@ export class QrScanner implements OnDestroy {
           0.114 * gray[i + 2]
         );
 
+
       gray[i] = value;
+
       gray[i + 1] = value;
+
       gray[i + 2] = value;
 
     }
@@ -679,7 +798,8 @@ export class QrScanner implements OnDestroy {
 
 
     /*
-     * More aggressive attempts
+     * Attempt 3:
+     * Multiple thresholds
      */
 
     const thresholds = [
@@ -714,8 +834,11 @@ export class QrScanner implements OnDestroy {
             ? 255
             : 0;
 
+
         binary[i] = value;
+
         binary[i + 1] = value;
+
         binary[i + 2] = value;
 
       }
@@ -753,18 +876,28 @@ export class QrScanner implements OnDestroy {
     this.errorMessage =
       'No QR code found. Make sure the full QR code is visible and clear.';
 
+
+    this.cdr.detectChanges();
+
   }
 
 
   /*
-   * PROCESS QR
+   * PROCESS QR RESULT
    */
 
   processQrData(
     data: string
   ): void {
 
-    if (this.alreadyScanned) {
+    /*
+     * Ignore duplicate results.
+     */
+
+    if (
+      this.alreadyScanned ||
+      this.scannedData
+    ) {
       return;
     }
 
@@ -779,6 +912,10 @@ export class QrScanner implements OnDestroy {
       string | null = null;
 
 
+    /*
+     * TESTING LABEL
+     */
+
     if (
       this.scanType === 'testing'
     ) {
@@ -789,6 +926,10 @@ export class QrScanner implements OnDestroy {
         );
 
     }
+
+    /*
+     * WOODEN FACTORY
+     */
 
     else {
 
@@ -806,16 +947,26 @@ export class QrScanner implements OnDestroy {
     );
 
 
+    /*
+     * QR FOUND BUT INVALID FORMAT
+     */
+
     if (!drumNumber) {
 
       this.isLoading = false;
 
       this.statusMessage = '';
 
+
       this.errorMessage =
         this.scanType === 'testing'
+
           ? 'QR found, but Testing Label Drum Number was not found.'
+
           : 'QR found, but Wooden Factory Drum Number was not found.';
+
+
+      this.cdr.detectChanges();
 
       return;
 
@@ -823,15 +974,32 @@ export class QrScanner implements OnDestroy {
 
 
     /*
-     * STOP EVERYTHING
+     * IMPORTANT:
+     *
+     * Lock scanner FIRST.
      */
 
     this.alreadyScanned = true;
 
-    this.scannedData = data;
+
+    /*
+     * STOP CAMERA FIRST.
+     */
+
+    this.stopScanner();
+
+
+    /*
+     * SAVE DATA.
+     */
+
+    this.scannedData =
+      data;
+
 
     this.extractedDrumNumber =
       drumNumber;
+
 
     this.isLoading = false;
 
@@ -840,34 +1008,28 @@ export class QrScanner implements OnDestroy {
     this.statusMessage =
       'QR scanned successfully.';
 
-    this.stopScanner();
+
+    /*
+     * FORCE ANGULAR TO UPDATE
+     * THE HTML IMMEDIATELY.
+     */
+
+    this.cdr.detectChanges();
 
 
     /*
-     * IMPORTANT:
-     *
-     * Send Testing Number immediately
-     * to App so it can be saved.
+     * SEND NUMBER TO PARENT.
      */
 
     this.scanned.emit(
       drumNumber
     );
 
-
-    /*
-     * Wooden number is also sent
-     * to App.
-     *
-     * App will compare it with
-     * the saved Testing number.
-     */
-
   }
 
 
   /*
-   * GO TO WOODEN
+   * GO TO WOODEN FACTORY
    */
 
   goToWooden(): void {
@@ -888,7 +1050,17 @@ export class QrScanner implements OnDestroy {
     );
 
 
-    this.scanType = 'wooden';
+    /*
+     * Change step.
+     */
+
+    this.scanType =
+      'wooden';
+
+
+    /*
+     * Clear Testing UI.
+     */
 
     this.scannedData = '';
 
@@ -898,31 +1070,51 @@ export class QrScanner implements OnDestroy {
 
     this.isLoading = false;
 
+
+    /*
+     * Allow scanner again.
+     */
+
     this.alreadyScanned = false;
+
 
     this.statusMessage =
       'Scan the Wooden Factory QR code.';
 
 
+    /*
+     * Tell parent.
+     */
+
     this.goWooden.emit();
 
+
+    this.cdr.detectChanges();
+
+
+    /*
+     * Start camera ONLY after
+     * clicking the button.
+     */
 
     setTimeout(() => {
 
       this.startScanner();
 
-    }, 150);
+    }, 200);
 
   }
 
 
   /*
-   * TESTING LABEL
+   * TESTING LABEL EXTRACTION
    *
    * Example:
+   *
    * Drum Number: Q-30857
    *
-   * Result:
+   * Returns:
+   *
    * 30857
    */
 
@@ -944,14 +1136,16 @@ export class QrScanner implements OnDestroy {
 
 
   /*
-   * WOODEN FACTORY
+   * WOODEN FACTORY EXTRACTION
    *
    * Examples:
    *
    * R-30857-26
+   *
    * SER-R-30857-26
    *
-   * Result:
+   * Returns:
+   *
    * 30857
    */
 
@@ -973,10 +1167,14 @@ export class QrScanner implements OnDestroy {
 
 
   /*
-   * STOP CAMERA
+   * STOP EVERYTHING
    */
 
   stopScanner(): void {
+
+    /*
+     * Stop native detection loop.
+     */
 
     if (
       this.nativeAnimationFrame
@@ -991,11 +1189,19 @@ export class QrScanner implements OnDestroy {
     }
 
 
+    /*
+     * Stop ZXing.
+     */
+
     this.zxingControls?.stop();
 
     this.zxingControls =
       undefined;
 
+
+    /*
+     * Stop camera tracks.
+     */
 
     const video =
       this.video?.nativeElement;
@@ -1011,11 +1217,9 @@ export class QrScanner implements OnDestroy {
 
       stream
         .getTracks()
-        .forEach(track => {
-
-          track.stop();
-
-        });
+        .forEach(
+          track => track.stop()
+        );
 
 
       video.srcObject = null;
@@ -1023,10 +1227,18 @@ export class QrScanner implements OnDestroy {
     }
 
 
+    /*
+     * Clear detector.
+     */
+
     this.nativeDetector = null;
 
   }
 
+
+  /*
+   * CLOSE SCANNER
+   */
 
   closeScanner(): void {
 
@@ -1036,6 +1248,10 @@ export class QrScanner implements OnDestroy {
 
   }
 
+
+  /*
+   * CLEANUP
+   */
 
   ngOnDestroy(): void {
 

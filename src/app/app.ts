@@ -21,32 +21,23 @@ export class App {
   matchResult: boolean | null = null;
 
 
-  // =========================
-  // OPEN SCANNER
-  // =========================
-
   openScanner(type: 'testing' | 'wooden'): void {
 
     this.scanType = type;
 
     this.showScanner = true;
 
+    this.matchResult = null;
+
   }
 
-
-  // =========================
-  // HANDLE SCAN
-  // =========================
 
   handleScan(number: string): void {
 
     console.log('Scanned Number:', number);
 
 
-    // =========================
-    // TESTING LABEL
-    // =========================
-
+    // Testing Label
     if (this.scanType === 'testing') {
 
       this.testingNumber = number;
@@ -56,33 +47,12 @@ export class App {
         this.testingNumber
       );
 
-
-      /*
-       * Close the current scanner first.
-       * Then open a completely new scanner
-       * for Wooden Factory.
-       */
-
-      this.showScanner = false;
-
-
-      setTimeout(() => {
-
-        this.scanType = 'wooden';
-
-        this.showScanner = true;
-
-      }, 150);
-
-
       return;
+
     }
 
 
-    // =========================
-    // WOODEN FACTORY
-    // =========================
-
+    // Wooden Factory
     if (this.scanType === 'wooden') {
 
       this.woodenNumber = number;
@@ -93,19 +63,9 @@ export class App {
       );
 
 
-      // Compare the numbers
-
       this.matchResult =
         this.testingNumber === this.woodenNumber;
 
-
-      console.log(
-        'MATCH RESULT:',
-        this.matchResult
-      );
-
-
-      // Close scanner
 
       this.showScanner = false;
 
@@ -114,9 +74,12 @@ export class App {
   }
 
 
-  // =========================
-  // CLOSE SCANNER
-  // =========================
+  goToWooden(): void {
+
+    this.scanType = 'wooden';
+
+  }
+
 
   closeScanner(): void {
 
@@ -124,10 +87,6 @@ export class App {
 
   }
 
-
-  // =========================
-  // SCAN AGAIN
-  // =========================
 
   scanAgain(): void {
 
@@ -139,14 +98,7 @@ export class App {
 
     this.scanType = 'testing';
 
-
-    // Open fresh scanner
-
-    setTimeout(() => {
-
-      this.showScanner = true;
-
-    }, 100);
+    this.showScanner = true;
 
   }
 

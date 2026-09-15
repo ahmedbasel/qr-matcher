@@ -1,10 +1,8 @@
 <div class="scanner-page">
 
-  <!-- ========================================== -->
-  <!-- HEADER -->
-  <!-- ========================================== -->
 
   <header class="scanner-header">
+
 
     <button
       class="back-button"
@@ -41,14 +39,13 @@
 
     </div>
 
+
   </header>
 
 
-  <!-- ========================================== -->
-  <!-- CAMERA -->
-  <!-- ========================================== -->
 
   <div class="camera-container">
+
 
     <video
       #video
@@ -72,6 +69,7 @@
     </div>
 
 
+
     @if (!scannedData) {
 
       <p class="scan-message">
@@ -81,6 +79,7 @@
       </p>
 
     }
+
 
 
     @if (isLoading) {
@@ -99,12 +98,10 @@
 
     }
 
+
   </div>
 
 
-  <!-- ========================================== -->
-  <!-- STATUS -->
-  <!-- ========================================== -->
 
   @if (statusMessage) {
 
@@ -117,13 +114,11 @@
   }
 
 
-  <!-- ========================================== -->
-  <!-- SCANNED RESULT -->
-  <!-- ========================================== -->
 
   @if (scannedData) {
 
     <div class="result">
+
 
       <div class="result-success">
 
@@ -138,7 +133,6 @@
       </div>
 
 
-      <!-- EXTRACTED DRUM NUMBER -->
 
       @if (extractedDrumNumber) {
 
@@ -157,7 +151,6 @@
       }
 
 
-      <!-- RAW QR DATA -->
 
       <div class="raw-data">
 
@@ -172,33 +165,31 @@
       </div>
 
 
-      <!-- CONTINUE BUTTON -->
 
       @if (scanType === 'testing') {
 
         <button
           type="button"
           class="continue-button"
-          (click)="continueToWooden()">
+          (click)="goToWooden()">
 
-          Continue to Wooden Factory
+          Go to Wooden Factory
 
         </button>
 
       }
+
 
     </div>
 
   }
 
 
-  <!-- ========================================== -->
-  <!-- CHOOSE IMAGE -->
-  <!-- ========================================== -->
 
   @if (!scannedData) {
 
     <div class="image-option">
+
 
       <div class="divider">
 
@@ -235,14 +226,12 @@
 
       </p>
 
+
     </div>
 
   }
 
 
-  <!-- ========================================== -->
-  <!-- ERROR -->
-  <!-- ========================================== -->
 
   @if (errorMessage) {
 
@@ -253,5 +242,6 @@
     </div>
 
   }
+
 
 </div>

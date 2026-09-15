@@ -3,17 +3,28 @@
   <main class="app">
 
     <header class="header">
-      <h1>QR Matcher</h1>
-      <p>Drum Number Checker</p>
+
+      <h1>
+        QR Matcher
+      </h1>
+
+      <p>
+        Drum Number Checker
+      </p>
+
     </header>
+
 
     <section class="scan-options">
 
       <button
         class="scan-card testing"
+        type="button"
         (click)="openScanner('testing')">
 
-        <span class="icon">📷</span>
+        <span class="icon">
+          📷
+        </span>
 
         <span class="title">
           Testing Label
@@ -21,22 +32,6 @@
 
         <span class="description">
           Scan Testing Label QR
-        </span>
-
-      </button>
-
-      <button
-        class="scan-card wooden"
-        (click)="openScanner('wooden')">
-
-        <span class="icon">📦</span>
-
-        <span class="title">
-          Wooden Factory
-        </span>
-
-        <span class="description">
-          Scan Wooden Factory QR
         </span>
 
       </button>
@@ -53,7 +48,8 @@
   <app-qr-scanner
     [scanType]="scanType"
     (scanned)="handleScan($event)"
-    (closed)="closeScanner()">
+    (closed)="closeScanner()"
+    (goWooden)="goToWooden()">
   </app-qr-scanner>
 
 }
@@ -63,9 +59,13 @@
 
   <main class="result-page">
 
-    @if (matchResult) {
+    <div
+      class="result-card"
+      [class.match]="matchResult"
+      [class.not-match]="!matchResult">
 
-      <div class="result-card match">
+
+      @if (matchResult) {
 
         <div class="result-icon">
           ✅
@@ -79,25 +79,7 @@
           The Drum Numbers match successfully.
         </p>
 
-        <div class="numbers">
-
-          <div>
-            <span>Testing Label</span>
-            <strong>{{ testingNumber }}</strong>
-          </div>
-
-          <div>
-            <span>Wooden Factory</span>
-            <strong>{{ woodenNumber }}</strong>
-          </div>
-
-        </div>
-
-      </div>
-
-    } @else {
-
-      <div class="result-card not-match">
+      } @else {
 
         <div class="result-icon">
           ❌
@@ -111,25 +93,43 @@
           The Drum Numbers are different.
         </p>
 
-        <div class="numbers">
+      }
 
-          <div>
-            <span>Testing Label</span>
-            <strong>{{ testingNumber }}</strong>
-          </div>
 
-          <div>
-            <span>Wooden Factory</span>
-            <strong>{{ woodenNumber }}</strong>
-          </div>
+      <div class="numbers">
+
+        <div class="number-box">
+
+          <span>
+            Testing Label
+          </span>
+
+          <strong>
+            {{ testingNumber }}
+          </strong>
+
+        </div>
+
+
+        <div class="number-box">
+
+          <span>
+            Wooden Factory
+          </span>
+
+          <strong>
+            {{ woodenNumber }}
+          </strong>
 
         </div>
 
       </div>
 
-    }
+    </div>
+
 
     <button
+      type="button"
       class="scan-again"
       (click)="scanAgain()">
 

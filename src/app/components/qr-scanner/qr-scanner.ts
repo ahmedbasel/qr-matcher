@@ -1037,21 +1037,26 @@ export class QrScanner implements OnDestroy {
    * 30857
    */
 
-  extractTestingLabelNumber(
-    data: string
-  ): string | null {
+extractTestingLabelNumber(
+  data: string
+): string | null {
 
-    const match =
-      data.match(
-        /Q-(\d+)/i
-      );
+  const match =
+    data.match(
+      /Q-(\d+)/i
+    );
 
-
-    return match
-      ? match[1]
-      : null;
-
+  if (!match) {
+    return null;
   }
+
+  const digits =
+    match[1];
+
+  return digits.length >= 5
+    ? digits.substring(0, 5)
+    : null;
+}
 
 
   /*

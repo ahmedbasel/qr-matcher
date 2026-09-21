@@ -1,4 +1,9 @@
-@if (!showScanner && matchResult === null) {
+
+<!-- =========================
+     HOME PAGE
+========================= -->
+
+@if (!showScanner && matchResult === null && !showHistory) {
 
   <main class="app">
 
@@ -16,6 +21,8 @@
 
 
     <section class="scan-options">
+
+      <!-- TESTING SCAN -->
 
       <button
         class="scan-card testing"
@@ -36,12 +43,38 @@
 
       </button>
 
+
+      <!-- HISTORY -->
+
+      <button
+        class="scan-card history"
+        type="button"
+        (click)="openHistory()">
+
+        <span class="icon">
+          📋
+        </span>
+
+        <span class="title">
+          History
+        </span>
+
+        <span class="description">
+          View Scan History
+        </span>
+
+      </button>
+
     </section>
 
   </main>
 
 }
 
+
+<!-- =========================
+     QR SCANNER
+========================= -->
 
 @if (showScanner) {
 
@@ -55,7 +88,11 @@
 }
 
 
-@if (!showScanner && matchResult !== null) {
+<!-- =========================
+     RESULT PAGE
+========================= -->
+
+@if (!showScanner && matchResult !== null && !showHistory) {
 
   <main class="result-page">
 
@@ -137,6 +174,29 @@
 
     </button>
 
+
+    <button
+      type="button"
+      class="back-history"
+      (click)="openHistory()">
+
+      View History
+
+    </button>
+
   </main>
+
+}
+
+
+<!-- =========================
+     HISTORY PAGE
+========================= -->
+
+@if (showHistory) {
+
+  <app-history
+    (back)="closeHistory()">
+  </app-history>
 
 }

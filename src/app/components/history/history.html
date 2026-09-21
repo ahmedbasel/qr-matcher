@@ -1,0 +1,197 @@
+<div class="history-page">
+
+  <button
+    type="button"
+    class="back-button"
+    (click)="goBack()">
+
+    ← Back
+
+  </button>
+
+  <header class="history-header">
+
+    <div>
+      <span class="eyebrow">QR MATCHER</span>
+
+      <h1>Scan History</h1>
+
+      <p>
+        Review all previous drum number checks.
+      </p>
+    </div>
+
+    @if (!loading) {
+
+      <div class="total-scans">
+
+        <span class="count">
+          {{ scans.length }}
+        </span>
+
+        <span class="label">
+          Total Scans
+        </span>
+
+      </div>
+
+    }
+
+  </header>
+
+  @if (loading) {
+
+    <div class="state-card">
+
+      <div class="loader"></div>
+
+      <h2>
+        Loading History
+      </h2>
+
+      <p>
+        Getting your scan records...
+      </p>
+
+    </div>
+
+  }
+
+  @else if (scans.length === 0) {
+
+    <div class="state-card empty">
+
+      <div class="state-icon">
+        📋
+      </div>
+
+      <h2>
+        No History Yet
+      </h2>
+
+      <p>
+        Your completed scans will appear here.
+      </p>
+
+    </div>
+
+  }
+
+  @else {
+
+    <section class="history-list">
+
+      @for (scan of scans; track scan.id) {
+
+        <article
+          class="history-card"
+          [class.match]="scan.matchResult"
+          [class.not-match]="!scan.matchResult">
+
+          <div class="card-top">
+
+            <div class="scan-number">
+
+              <span>
+                Scan
+              </span>
+
+              <strong>
+                #{{ $index + 1 }}
+              </strong>
+
+            </div>
+
+            @if (scan.matchResult) {
+
+              <div class="result-badge match-badge">
+
+                <span>✓</span>
+
+                MATCH
+
+              </div>
+
+            } @else {
+
+              <div class="result-badge not-match-badge">
+
+                <span>×</span>
+
+                NOT MATCH
+
+              </div>
+
+            }
+
+          </div>
+
+          <div class="numbers-container">
+
+            <div class="number-item">
+
+              <div class="number-label">
+
+                <span class="dot testing-dot"></span>
+
+                <span>
+                  Testing Label
+                </span>
+
+              </div>
+
+              <strong>
+                {{ scan.testingNumber }}
+              </strong>
+
+            </div>
+
+            <div class="connection">
+
+              <span>
+                →
+              </span>
+
+            </div>
+
+            <div class="number-item">
+
+              <div class="number-label">
+
+                <span class="dot wooden-dot"></span>
+
+                <span>
+                  Wooden Factory
+                </span>
+
+              </div>
+
+              <strong>
+                {{ scan.woodenNumber }}
+              </strong>
+
+            </div>
+
+          </div>
+
+          <div class="card-footer">
+
+            <span class="date-icon">
+              ◷
+            </span>
+
+            <span>
+              {{ scan.createdAt?.toDate?.() | date:'dd MMM yyyy, HH:mm' }}
+            </span>
+
+          </div>
+
+        </article>
+
+      }
+
+    </section>
+
+  }
+
+</div>

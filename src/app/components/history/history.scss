@@ -1,0 +1,445 @@
+
+.history-page {
+  min-height: 100vh;
+  padding: 40px 24px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.history-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.eyebrow {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  opacity: 0.55;
+}
+
+.history-header h1 {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.history-header p {
+  margin: 10px 0 0;
+  font-size: 15px;
+  opacity: 0.6;
+}
+
+
+/* =========================
+   TOTAL SCANS
+========================= */
+
+.total-scans {
+  min-width: 130px;
+  padding: 16px 20px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.total-scans .count {
+  display: block;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.total-scans .label {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  opacity: 0.55;
+}
+
+
+/* =========================
+   HISTORY LIST
+========================= */
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+/* =========================
+   HISTORY CARD
+========================= */
+
+.history-card {
+  position: relative;
+  overflow: hidden;
+
+  padding: 22px;
+
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.05);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================
+   STATUS LINE
+========================= */
+
+.history-card::before {
+  content: '';
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 4px;
+}
+
+.history-card.match::before {
+  background: #16a34a;
+}
+
+.history-card.not-match::before {
+  background: #dc2626;
+}
+
+
+/* =========================
+   CARD TOP
+========================= */
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 22px;
+}
+
+.scan-number {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.scan-number span {
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.scan-number strong {
+  font-size: 16px;
+}
+
+
+/* =========================
+   RESULT BADGE
+========================= */
+
+.result-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 12px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.result-badge span {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.match-badge {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.not-match-badge {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+
+/* =========================
+   NUMBERS
+========================= */
+
+.numbers-container {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    50px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.number-item {
+  padding: 18px;
+
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 14px;
+
+  background: #f8fafc;
+}
+
+.number-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 10px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  opacity: 0.6;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.testing-dot {
+  background: #2563eb;
+}
+
+.wooden-dot {
+  background: #92400e;
+}
+
+.number-item strong {
+  display: block;
+
+  font-size: 24px;
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+
+  word-break: break-word;
+}
+
+
+/* =========================
+   CONNECTION
+========================= */
+
+.connection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 24px;
+
+  opacity: 0.35;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 18px;
+  padding-top: 15px;
+
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+  font-size: 12px;
+
+  opacity: 0.5;
+}
+
+.date-icon {
+  font-size: 15px;
+}
+
+
+/* =========================
+   LOADING / EMPTY
+========================= */
+
+.state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 320px;
+
+  padding: 40px;
+
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 22px;
+
+  background: #ffffff;
+
+  text-align: center;
+}
+
+.state-card h2 {
+  margin: 18px 0 6px;
+
+  font-size: 22px;
+}
+
+.state-card p {
+  margin: 0;
+
+  font-size: 14px;
+
+  opacity: 0.55;
+}
+
+.state-icon {
+  font-size: 42px;
+}
+
+
+/* =========================
+   LOADER
+========================= */
+
+.loader {
+  width: 38px;
+  height: 38px;
+
+  border: 3px solid rgba(0, 0, 0, 0.08);
+  border-top-color: currentColor;
+
+  border-radius: 50%;
+
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+
+  to {
+    transform: rotate(360deg);
+  }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+  .history-page {
+    padding: 28px 16px 40px;
+  }
+
+  .history-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .history-header h1 {
+    font-size: 32px;
+  }
+
+  .total-scans {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .numbers-container {
+    grid-template-columns: 1fr;
+  }
+
+  .connection {
+    transform: rotate(90deg);
+    height: 20px;
+  }
+
+  .number-item strong {
+    font-size: 20px;
+  }
+
+  .history-card {
+    padding: 18px;
+  }
+
+  .card-top {
+    align-items: flex-start;
+  }
+
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 24px;
+  padding: 10px 16px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #475569;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  transform: translateX(-2px);
+}

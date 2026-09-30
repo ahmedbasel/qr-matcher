@@ -1,275 +1,427 @@
-<div class="scanner-page">
+<div class="min-h-screen bg-slate-50 text-slate-900 px-4 py-6 sm:px-6">
 
-  <!-- HEADER -->
+  <div class="mx-auto w-full max-w-3xl">
 
-  <header class="scanner-header">
+    <!-- =========================
+         HEADER
+    ========================= -->
 
-    <button
-      class="back-button"
-      type="button"
-      (click)="closeScanner()">
-      ←
-    </button>
+    <header
+      class="mb-6 flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-5">
 
-    <div class="header-info">
+      <button
+        type="button"
+        (click)="closeScanner()"
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-xl text-slate-500 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900">
 
-      <span class="step-badge">
-        {{ scanType === 'testing' ? 'STEP 1' : 'STEP 2' }}
-      </span>
+        ←
 
-      <h1>
-        {{
-          scanType === 'testing'
-            ? 'Testing Label'
-            : 'Wooden Factory'
-        }}
-      </h1>
-
-      <p>
-        {{
-          scanType === 'testing'
-            ? 'Scan the Testing Label QR code'
-            : 'Scan the Wooden Factory QR code'
-        }}
-      </p>
-
-    </div>
-
-  </header>
+      </button>
 
 
-  <!-- CAMERA -->
+      <div class="min-w-0 flex-1">
 
-  @if (!scannedData) {
+        <div class="flex items-center gap-2">
 
-    <div class="camera-container">
+          <span
+            class="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-extrabold tracking-wider text-blue-700">
 
-      <video
-        #video
-        class="camera"
-        autoplay
-        muted
-        playsinline>
-      </video>
+            {{ scanType === 'testing' ? 'STEP 1' : 'STEP 2' }}
 
-
-      <div class="camera-overlay">
-
-        <div class="scan-frame">
-
-          <div class="corner top-left"></div>
-          <div class="corner top-right"></div>
-          <div class="corner bottom-left"></div>
-          <div class="corner bottom-right"></div>
+          </span>
 
         </div>
 
+
+        <h1
+          class="mt-1 text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">
+
+          {{
+            scanType === 'testing'
+              ? 'Testing Label'
+              : 'Wooden Factory'
+          }}
+
+        </h1>
+
+
+        <p class="mt-1 text-sm text-slate-500">
+
+          {{
+            scanType === 'testing'
+              ? 'Scan the Testing Label QR code'
+              : 'Scan the Wooden Factory QR code'
+          }}
+
+        </p>
+
       </div>
 
+    </header>
 
-      <div class="scan-message">
 
-        <span class="scan-icon">⌁</span>
+    <!-- =========================
+         CAMERA
+    ========================= -->
+
+    @if (!scannedData) {
+
+      <section
+        class="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
+
+        <!-- CAMERA -->
+
+        <div
+          class="relative aspect-[4/3] w-full overflow-hidden bg-slate-900">
+
+          <video
+            #video
+            autoplay
+            muted
+            playsinline
+            class="h-full w-full object-cover">
+          </video>
+
+
+          <!-- CAMERA OVERLAY -->
+
+          <div
+            class="pointer-events-none absolute inset-0 flex items-center justify-center">
+
+            <div
+              class="relative h-56 w-56 sm:h-64 sm:w-64">
+
+              <!-- TOP LEFT -->
+
+              <div
+                class="absolute left-0 top-0 h-8 w-8 border-l-4 border-t-4 border-blue-500">
+              </div>
+
+
+              <!-- TOP RIGHT -->
+
+              <div
+                class="absolute right-0 top-0 h-8 w-8 border-r-4 border-t-4 border-blue-500">
+              </div>
+
+
+              <!-- BOTTOM LEFT -->
+
+              <div
+                class="absolute bottom-0 left-0 h-8 w-8 border-b-4 border-l-4 border-blue-500">
+              </div>
+
+
+              <!-- BOTTOM RIGHT -->
+
+              <div
+                class="absolute bottom-0 right-0 h-8 w-8 border-b-4 border-r-4 border-blue-500">
+              </div>
+
+
+              <!-- SCAN LINE -->
+
+              <div
+                class="absolute left-3 right-3 top-1/2 h-0.5 bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)]">
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- SCAN MESSAGE -->
+
+          <div
+            class="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-xs font-medium text-white backdrop-blur-sm">
+
+            <span class="text-base">
+              ⌁
+            </span>
+
+            <span>
+              Place the QR code inside the frame
+            </span>
+
+          </div>
+
+
+          <!-- LOADING -->
+
+          @if (isLoading) {
+
+            <div
+              class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/60 backdrop-blur-sm">
+
+              <div
+                class="h-10 w-10 animate-spin rounded-full border-4 border-white/30 border-t-white">
+              </div>
+
+
+              <span
+                class="mt-3 text-sm font-semibold text-white">
+
+                Reading QR code...
+
+              </span>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        <!-- CAMERA STATUS -->
+
+        @if (statusMessage) {
+
+          <div
+            class="border-t border-slate-100 bg-slate-50 px-4 py-3 text-center text-sm text-slate-500">
+
+            {{ statusMessage }}
+
+          </div>
+
+        }
+
+      </section>
+
+    }
+
+
+    <!-- =========================
+         SCANNED RESULT
+    ========================= -->
+
+    @if (scannedData) {
+
+      <section
+        class="overflow-hidden rounded-3xl border border-emerald-200 bg-white shadow-lg">
+
+        <!-- SUCCESS HEADER -->
+
+        <div
+          class="flex items-center gap-4 border-b border-slate-100 bg-emerald-50 px-5 py-5 sm:px-6">
+
+          <div
+            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xl font-bold text-emerald-600">
+
+            ✓
+
+          </div>
+
+
+          <div>
+
+            <span
+              class="text-[11px] font-bold tracking-wider text-emerald-600">
+
+              QR CODE
+
+            </span>
+
+
+            <h2
+              class="mt-0.5 text-lg font-extrabold text-slate-900">
+
+              Scanned Successfully
+
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <div class="p-5 sm:p-6">
+
+          <!-- TYPE -->
+
+          <div
+            class="mb-5">
+
+            <span
+              class="inline-flex rounded-full bg-blue-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-blue-700">
+
+              {{
+                scanType === 'testing'
+                  ? 'TESTING LABEL'
+                  : 'WOODEN FACTORY'
+              }}
+
+            </span>
+
+          </div>
+
+
+          <!-- DRUM NUMBER -->
+
+          <div
+            class="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
+
+            <span
+              class="text-xs font-bold uppercase tracking-wider text-slate-400">
+
+              Drum Number
+
+            </span>
+
+
+            <strong
+              class="mt-3 block break-all text-3xl font-extrabold tracking-wide text-slate-900 sm:text-4xl">
+
+              {{ extractedDrumNumber }}
+
+            </strong>
+
+          </div>
+
+
+          <!-- RAW DATA -->
+
+          <div
+            class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
+
+            <div
+              class="border-b border-slate-100 bg-slate-50 px-4 py-3">
+
+              <span
+                class="text-xs font-bold uppercase tracking-wider text-slate-500">
+
+                QR Data
+
+              </span>
+
+            </div>
+
+
+            <div
+              class="break-all bg-white px-4 py-4 font-mono text-sm leading-relaxed text-slate-600">
+
+              {{ scannedData }}
+
+            </div>
+
+          </div>
+
+
+          <!-- NEXT BUTTON -->
+
+          @if (scanType === 'testing') {
+
+            <button
+              type="button"
+              (click)="goToWooden()"
+              class="mt-5 flex h-13 w-full items-center justify-center gap-3 rounded-xl bg-blue-600 px-5 py-3.5 font-bold text-white shadow-md shadow-blue-200 transition hover:bg-blue-700 active:scale-[0.99]">
+
+              <span>
+                Go to Wooden Factory
+              </span>
+
+              <span class="text-xl">
+                →
+              </span>
+
+            </button>
+
+          }
+
+        </div>
+
+      </section>
+
+    }
+
+
+    <!-- =========================
+         IMAGE OPTION
+    ========================= -->
+
+    @if (!scannedData) {
+
+      <section class="mt-5">
+
+        <!-- DIVIDER -->
+
+        <div class="flex items-center gap-4">
+
+          <div class="h-px flex-1 bg-slate-200"></div>
+
+          <span
+            class="text-xs font-bold tracking-wider text-slate-400">
+
+            OR
+
+          </span>
+
+          <div class="h-px flex-1 bg-slate-200"></div>
+
+        </div>
+
+
+        <!-- IMAGE BUTTON -->
+
+        <label
+          class="mt-5 flex cursor-pointer items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-bold text-slate-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700">
+
+          <span class="text-xl">
+            🖼️
+          </span>
+
+
+          <span>
+            Choose QR Image
+          </span>
+
+
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            (change)="onImageSelected($event)"
+            class="hidden">
+
+        </label>
+
+
+        <p
+          class="mt-3 text-center text-xs text-slate-400">
+
+          Choose a clear photo containing the full QR code
+
+        </p>
+
+      </section>
+
+    }
+
+
+    <!-- =========================
+         ERROR
+    ========================= -->
+
+    @if (errorMessage) {
+
+      <div
+        class="mt-5 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+
+        <span
+          class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-100 font-bold">
+
+          !
+
+        </span>
+
 
         <span>
-          Place the QR code inside the frame
+          {{ errorMessage }}
         </span>
 
       </div>
 
+    }
 
-      @if (isLoading) {
-
-        <div class="loading">
-
-          <div class="spinner"></div>
-
-          <span>
-            Reading QR code...
-          </span>
-
-        </div>
-
-      }
-
-    </div>
-
-  }
-
-
-  <!-- STATUS -->
-
-  @if (statusMessage && !scannedData) {
-
-    <div class="status-message">
-      {{ statusMessage }}
-    </div>
-
-  }
-
-
-  <!-- RESULT -->
-
-  @if (scannedData) {
-
-    <section class="result-card">
-
-      <!-- SUCCESS -->
-
-      <div class="success-header">
-
-        <div class="success-icon">
-          ✓
-        </div>
-
-        <div>
-
-          <span>
-            QR CODE
-          </span>
-
-          <h2>
-            Scanned Successfully
-          </h2>
-
-        </div>
-
-      </div>
-
-
-      <!-- TYPE -->
-
-      <div class="type-label">
-
-        {{
-          scanType === 'testing'
-            ? 'TESTING LABEL'
-            : 'WOODEN FACTORY'
-        }}
-
-      </div>
-
-
-      <!-- DRUM NUMBER -->
-
-      <div class="drum-card">
-
-        <span class="label">
-          Drum Number
-        </span>
-
-        <strong>
-          {{ extractedDrumNumber }}
-        </strong>
-
-      </div>
-
-
-      <!-- RAW DATA -->
-
-      <div class="raw-card">
-
-        <div class="raw-header">
-
-          <span>
-            QR Data
-          </span>
-
-        </div>
-
-        <div class="raw-content">
-          {{ scannedData }}
-        </div>
-
-      </div>
-
-
-      <!-- NEXT BUTTON -->
-
-      @if (scanType === 'testing') {
-
-        <button
-          type="button"
-          class="continue-button"
-          (click)="goToWooden()">
-
-          <span>
-            Go to Wooden Factory
-          </span>
-
-          <span class="arrow">
-            →
-          </span>
-
-        </button>
-
-      }
-
-    </section>
-
-  }
-
-
-  <!-- IMAGE OPTION -->
-
-  @if (!scannedData) {
-
-    <section class="image-option">
-
-      <div class="divider">
-
-        <span>
-          OR
-        </span>
-
-      </div>
-
-
-      <label class="image-button">
-
-        <span class="image-icon">
-          🖼️
-        </span>
-
-        <span>
-          Choose QR Image
-        </span>
-
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          (change)="onImageSelected($event)"
-        >
-
-      </label>
-
-
-      <p class="image-hint">
-        Choose a clear photo containing the full QR code
-      </p>
-
-    </section>
-
-  }
-
-
-  <!-- ERROR -->
-
-  @if (errorMessage) {
-
-    <div class="error">
-
-      <span class="error-icon">
-        !
-      </span>
-
-      <span>
-        {{ errorMessage }}
-      </span>
-
-    </div>
-
-  }
+  </div>
 
 </div>

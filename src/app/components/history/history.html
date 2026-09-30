@@ -87,8 +87,7 @@
     @if (!loading && scans.length > 0) {
 
       <section
-        class="mb-7 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_220px]">
-
+  class="mb-7 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_180px_180px]">
         <!-- SEARCH -->
 
         <div
@@ -113,20 +112,37 @@
 
         <!-- MONTH -->
 
-        <select
-          [(ngModel)]="selectedMonth"
-          class="h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-sm outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-50">
+     <select
+  [(ngModel)]="selectedMonth"
+  (ngModelChange)="onMonthChange()"
+  class="h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-sm outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-50">
 
-          @for (month of months; track month.value) {
+  @for (month of months; track month.value) {
 
-            <option [value]="month.value">
-              {{ month.label }}
-            </option>
+    <option [value]="month.value">
+      {{ month.label }}
+    </option>
 
-          }
+  }
 
-        </select>
+</select>
+<select
+  [(ngModel)]="selectedDay"
+  class="h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-sm outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-50">
 
+  <option value="all">
+    All Days
+  </option>
+
+  @for (day of days; track day) {
+
+    <option [value]="day">
+      {{ day }}
+    </option>
+
+  }
+
+</select>
       </section>
 
     }

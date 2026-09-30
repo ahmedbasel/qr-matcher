@@ -39,6 +39,13 @@ export class History implements OnInit {
 
   selectedMonth = 'all';
 
+  selectedDay = 'all';
+
+  days = Array.from(
+    { length: 31 },
+    (_, index) => index + 1
+  );
+
   months = [
     { value: 'all', label: 'All Months' },
     { value: '0', label: 'January' },
@@ -94,6 +101,12 @@ export class History implements OnInit {
 
   }
 
+  onMonthChange(): void {
+
+    this.selectedDay = 'all';
+
+  }
+
   get filteredScans(): ScanHistory[] {
 
     const search =
@@ -116,7 +129,18 @@ export class History implements OnInit {
           scanDate.getMonth() === Number(this.selectedMonth)
         );
 
-      return matchesSearch && matchesMonth;
+      const matchesDay =
+        this.selectedDay === 'all' ||
+        (
+          scanDate &&
+          scanDate.getDate() === Number(this.selectedDay)
+        );
+
+      return (
+        matchesSearch &&
+        matchesMonth &&
+        matchesDay
+      );
 
     });
 

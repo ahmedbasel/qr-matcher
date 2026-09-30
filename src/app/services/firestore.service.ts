@@ -3,7 +3,9 @@ import {
   getFirestore,
   collection,
   addDoc,
-  getDocs
+  getDocs,
+  query,
+  orderBy
 } from 'firebase/firestore';
 
 import { firebaseApp } from '../firebase.config';
@@ -47,19 +49,22 @@ export class FirestoreService {
   // GET HISTORY
   // =========================
 
-  async getScans() {
-
+async getScans() {
   const scansCollection = collection(
     this.db,
     'scans'
   );
 
+  const scansQuery = query(
+    scansCollection,
+    orderBy('createdAt', 'desc')
+  );
+
   const snapshot = await getDocs(
-    scansCollection
+    scansQuery
   );
 
   return snapshot.docs.map(doc => {
-
     const data = doc.data();
 
     return {
@@ -69,9 +74,7 @@ export class FirestoreService {
       matchResult: data['matchResult'] as boolean,
       createdAt: data['createdAt']
     };
-
   });
-
 }
 
 }

@@ -1037,12 +1037,9 @@ export class QrScanner implements OnDestroy {
    * 30857
    */
 
-extractTestingLabelNumber(
-  data: string
-): string | null {
-
+extractTestingLabelNumber(data: string): string | null {
   const match = data.match(
-    /Drum\s*Number\s*:\s*([A-Z]-?\d{5})/i
+    /(?:Drum\s*Number|Dr)\s*:\s*([A-Z]-?\d{5})/i
   );
 
   if (!match) {
@@ -1063,12 +1060,9 @@ extractTestingLabelNumber(
    * 30857
    */
 
-  extractWoodenFactoryNumber(
-  data: string
-): string | null {
-
+extractWoodenFactoryNumber(data: string): string | null {
   const match = data.match(
-    /SER-([A-Z])-(\d{5})-26/i
+    /(?:SER-|DrNumber-\s*:?\s*)([A-Z])-(\d{5})(?:-26)?/i
   );
 
   if (!match) {
@@ -1077,6 +1071,7 @@ extractTestingLabelNumber(
 
   return `${match[1]}-${match[2]}`;
 }
+
 
   /*
    * STOP CAMERA
